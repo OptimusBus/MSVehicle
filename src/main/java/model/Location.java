@@ -1,5 +1,8 @@
 package model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Location {
 	public Location(double lati, double longi) {
 		latitute = lati;

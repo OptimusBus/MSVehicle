@@ -2,6 +2,24 @@ package model;
 
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.xml.bind.annotation.XmlRootElement;
+
+/**
+ * Entity implementation class for Entity: Vehicle
+ *
+ */
+@Entity
+@NamedQueries ({
+	@NamedQuery(name="Vehicle.getAllVehicles", query = "SELECT * form Vehicles"),
+})
+
+@XmlRootElement
 public class Vehicle {
 	
 	public Vehicle(String id, Location loc, String sp, boolean isActive) {
@@ -65,8 +83,9 @@ public class Vehicle {
 	public void setRoute(List<Node> route) {
 		this.route = route;
 	}
-
-	private String vehicleId;
+	
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Id private String vehicleId;
 	private Location location;
 	private String standingPoint;
 	private static enum State { FREE, PRINCIPALE, SUPPORTO, FUORISERVIZIO }
@@ -76,4 +95,5 @@ public class Vehicle {
 	private String vehicleToSupport;
 	private State state = State.FREE;
 	private List<Node> route;
+	
 }

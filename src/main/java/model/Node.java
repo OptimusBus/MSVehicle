@@ -1,5 +1,8 @@
 package model;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Node {
 	public Node(String nodeId, Location location, Type type, double potentialDemand) {
 		this.location = location;
