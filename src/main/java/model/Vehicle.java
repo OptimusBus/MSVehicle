@@ -16,11 +16,19 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @Entity
 @NamedQueries ({
-	@NamedQuery(name="Vehicle.getAllVehicles", query = "SELECT * form Vehicles"),
+	@NamedQuery(name="Vehicle.getAllVehicles", query = "SELECT * from Vehicles"),
+	@NamedQuery(name="Vehicle.getVehicleById", query = "SELECT * from Vehicles where vehcileId = :id"),
+	@NamedQuery(name="Vehicle.getVehiclesByState", query = "SELECT * from Vehicles where state = :state"),
+	@NamedQuery(name="Vehicle.getNotEmptyVehicles", query = "SELECT * from Vehicles where currentOccupancy < maxOccupancy"),
+	@NamedQuery(name="Vehicle.countVehicles", query = "SELECT count(*) from Vehicles"),
 })
 
 @XmlRootElement
 public class Vehicle {
+	
+	public Vehicle(String id) {
+		this.vehicleId = id;
+	}
 	
 	public Vehicle(String id, Location loc, String sp, boolean isActive) {
 		this.vehicleId = id;
@@ -77,23 +85,42 @@ public class Vehicle {
 	public void setState(State state) {
 		this.state = state;
 	}
-	public List<Node> getRoute() {
+	public Route getRoute() {
 		return route;
 	}
-	public void setRoute(List<Node> route) {
+	public void setRoute(Route route) {
 		this.route = route;
+	}
+	public void addPassenger(String p) {
+		if(currentOccupancy < maxOccupancy) {
+			this.passengers.add(p);
+			this.currentOccupancy++;
+		}
+	}
+	public void removePassenger(String p) {
+		if(currentOccupancy > 0) {
+			int i = 0;
+			boolean done = false;
+			while(!done && i < this.passengers.size()) {
+				if(this.passengers.get(i).equals(p)) {
+					this.passengers.remove(i);
+					done = true;
+				}
+				i++;
+			}
+		}
 	}
 	
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Id private String vehicleId;
 	private Location location;
 	private String standingPoint;
-	private static enum State { FREE, PRINCIPALE, SUPPORTO, FUORISERVIZIO }
+	public static enum State { FREE, PRINCIPALE, SUPPORTO, FUORISERVIZIO }
 	private boolean isActive = false;
 	private int maxOccupancy = 7;
 	private int currentOccupancy = 0;
 	private String vehicleToSupport;
 	private State state = State.FREE;
-	private List<Node> route;
-	
+	private Route route;
+	private List<String> passengers;
 }
