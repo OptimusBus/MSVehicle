@@ -4,6 +4,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Node {
+	
+	public Node() {}
+	
 	public Node(String nodeId, Location location, Type type, double potentialDemand) {
 		this.location = location;
 		this.nodeId = nodeId;
@@ -39,6 +42,6 @@ public class Node {
 	private Location location;
 	private String nodeId;
 	private double potentialDemand;
-	private static enum Type { STANDINGPOINT, PICKUPPOINT, TRANSITION }
+	public static enum Type { STANDINGPOINT, PICKUPPOINT, TRANSITION }
 	private Type type;
 }

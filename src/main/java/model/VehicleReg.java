@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class VehicleReg {	
+	public VehicleReg() {}
 	public VehicleReg(String username, String password, String email) {
 		super();
 		this.username = username;
