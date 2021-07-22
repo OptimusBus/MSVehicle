@@ -2,6 +2,8 @@ package model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.bson.Document;
+
 @XmlRootElement
 public class VehicleReg {	
 	public VehicleReg() {}
@@ -29,6 +31,21 @@ public class VehicleReg {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public static VehicleReg decodeVehicleReg(Document d) {
+		if(d.size() == 0) return null;
+		String us = d.getString("username");
+		String pwd = d.getString("password");
+		String email = d.getString("email");
+		return new VehicleReg(us, pwd, email);
+	}
+	
+	public static Document encodeVehicleReg(VehicleReg vr) {
+		Document d = new Document("username", vr.getUsername());
+		d.append("password", vr.getPassword());
+		d.append("email", vr.getEmail());
+		return d;
 	}
 
 	private String username;

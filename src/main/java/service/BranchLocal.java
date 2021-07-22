@@ -13,10 +13,11 @@ public interface BranchLocal {
 	public Vehicle getVehicle(String vehicleId); 
 	public List<Vehicle> getAllVehicles();
 	public void assignSupport(String vehicleId, String idToSupport);
-	public void updateVehicleState(String vehicleId, int s);
+	public void updateVehicleState(String vehicleId, String s);
 	public void updateStandingPoint(String vehicleId, String standingPoint);
 	public void setLastKnownPosition(String vehicleId, Location location);
 	public void activateVehicle(String vehicleId);
 	public void addPassenger(String vehicleId);
 	public String calcVehicleId();
+	public void removeVehicle(String vehicleId) throws Exception;
 }
