@@ -1,7 +1,9 @@
 package controller;
 
+
 import java.net.URI;
 
+import javax.json.Json;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -14,6 +16,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import org.bson.Document;
 import com.mongodb.BasicDBObject;
+import com.mongodb.util.JSON;
+
+import innerconnector.HttpConnector;
 import model.Location;
 import model.Vehicle;
 import model.VehicleReg;
@@ -32,9 +37,17 @@ public class VehicleController {
 	}
 	
 	@GET
+	@Path("/bestVehicle")
 	public Response bestVehicleForPosition(@QueryParam("fromLat") double fromLat, @QueryParam("fromLong") double fromLong, 
 											@QueryParam("toLat") double toLat, @QueryParam("toLong") double toLong) {
 		return null;
+	}
+	
+	@GET
+	@Path("/test")
+	public Response testme() throws Exception {
+		HttpConnector hc = new HttpConnector();
+		return Response.ok(Json.encodePointer(hc.test())).build();
 	}
 	
 	@GET

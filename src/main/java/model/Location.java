@@ -26,9 +26,9 @@ public class Location {
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
-	public static Location decodeLocation(Document dd) {
-		Document d = (Document) dd.get("location");
-		if(d.getDouble("latitude") == null || d.getDouble("longitude") == null) return null;
+	public static Location decodeLocation(Document d) {
+		if(d.get("location") != null) d = (Document) d.get("location");
+		if(d.getDouble("latitude") == null || d.getDouble("longitude") == null) return new Location();
 		double lati = d.getDouble("latitude");
 		double longi = d.getDouble("longitude");
 		return new Location(lati, longi);

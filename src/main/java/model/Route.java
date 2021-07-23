@@ -21,7 +21,7 @@ public class Route {
 	}
 	
 	public static Route decodeRoute(Document d) {
-		if(d.size() == 0) return null;
+		if(d.size() == 0) new Route();
 		List<Node> n = new ArrayList<Node>();
 		for(int i = 0; i < d.size(); i++) {
 			Document doc = (Document) d.get("node"+i);
