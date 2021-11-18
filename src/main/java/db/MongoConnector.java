@@ -70,5 +70,11 @@ public class MongoConnector {
 		coll.deleteOne(Filters.eq("vehicleId", vehicleId));
 	}
 	
-	private static final MongoClient m = new MongoClient("172.18.10.144", 31181);
+	public Document getVehicleByEmail(String email){
+		MongoDatabase db = m.getDatabase("VehiclesDB");
+		MongoCollection<Document> coll = db.getCollection("vehicles");
+		return coll.find(Filters.eq("email", email)).first();
+	}
+	
+	private static final MongoClient m = new MongoClient("137.121.170.248", 31186);
 }

@@ -20,4 +20,5 @@ public interface BranchLocal {
 	public void addPassenger(String vehicleId);
 	public String calcVehicleId();
 	public void removeVehicle(String vehicleId) throws Exception;
+	public Vehicle getVehicleByEmail(String email);
 }

@@ -2,8 +2,8 @@ package controller;
 
 
 import java.net.URI;
-
-import javax.json.Json;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -16,7 +16,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import org.bson.Document;
 import com.mongodb.BasicDBObject;
-import com.mongodb.util.JSON;
 
 import innerconnector.HttpConnector;
 import model.Location;
@@ -35,34 +34,55 @@ public class VehicleController {
 	public VehicleController() {
 		super();
 	}
-	
+
 	@GET
-	@Path("/bestVehicle")
-	public Response bestVehicleForPosition(@QueryParam("fromLat") double fromLat, @QueryParam("fromLong") double fromLong, 
-											@QueryParam("toLat") double toLat, @QueryParam("toLong") double toLong) {
-		return null;
+	@Path("/support")
+	public Response requestVehicleSupport(@QueryParam("vehicleId") String vehicleId) {
+		Vehicle v = branch.getVehicle(vehicleId);
+		Response res = HttpConnector.requestBestVehicle(Vehicle.encodeVehicle(v).toJson());
+		if(res.getStatus() == 404) return Response.status(404).entity("Not Found").build();
+		if(res.getStatus() == 200) {
+			return Response.ok(res.readEntity(String.class)).build();
+		}
+		return Response.status(500).entity("Server Error").build();
 	}
 	
 	@GET
-	@Path("/test")
-	public Response testme() throws Exception {
-		HttpConnector hc = new HttpConnector();
-		return Response.ok(Json.encodePointer(hc.test())).build();
+	@Path("/getRoute")
+	public Response requestVehicleRoute(@QueryParam("vehicleId") String vehicleId) {
+		Response res = HttpConnector.requestVehicleRoute(vehicleId);
+		System.out.println(res.getStatus());
+		if(res.getStatus() == 404) return Response.status(404).entity("Not Found").build();
+		if(res.getStatus() == 200) {
+			return Response.ok(res.readEntity(String.class)).build();
+		}
+		return Response.status(500).entity("Server Error").build();
+	}
+	
+	@GET
+	@Path("/all")
+	public Response getAllVehicles() {
+		List<Vehicle> vl = new ArrayList<Vehicle>();
+		vl = branch.getAllVehicles();
+		if(vl == null) return Response.status(500).entity("Server Error").build();
+		if(vl.size() == 0) return Response.status(404).entity("No vehicle found").build();
+		return Response.ok(vl).build();
 	}
 	
 	@GET
 	@Path("/{vehicleId}")
 	public Response getVehicleById(@PathParam("vehicleId") String vehicleId) {
-		System.out.println(vehicleId);
 		Vehicle v = branch.getVehicle(vehicleId);
 		if(v == null) return Response.status(404).build();
 		return Response.ok(v).build();
 	}
 	
 	@GET
-	@Path("/support")
-	public Response requestVehicleSupport(@QueryParam("vehicleId") String vehicleId) {
-		return Response.ok("aaa").build();
+	@Path("/getEmail")
+	public Response getVehicleByEmail(@QueryParam("email") String email) {
+		Vehicle v = branch.getVehicleByEmail(email);
+		if(v == null) return Response.status(404).build();
+		return Response.ok(v).build();
 	}
 	
 	@GET
@@ -118,6 +138,7 @@ public class VehicleController {
 			int size = v.getRoute().getRoute().size();
 			if(size == 0) throw new Exception();
 			branch.setLastKnownPosition(vehicleId, v.getRoute().getRoute().get(size-1).getLocation());
+			branch.updateVehicleState(vehicleId, "FREE");
 			return Response.status(204).build();
 		}catch(Exception e) {
 			return Response.status(500).build();
@@ -131,10 +152,19 @@ public class VehicleController {
 			BasicDBObject b = BasicDBObject.parse(request);
 			Document d = new Document(b);
 			VehicleReg vr = VehicleReg.decodeVehicleReg(d);
-			// security service registration request
 			String id = branch.calcVehicleId();
-			id = branch.createVehicle(id);
-			return Response.created(new URI("/vehicles/"+id)).build();
+			vr.setVehicleId(id);
+			Response res = HttpConnector.requestVehicleRegistration(VehicleReg.encodeVehicleReg(vr).toJson());
+			int code = res.getStatus();
+			switch(code) {
+				case 201:
+					id = branch.createVehicle(id);
+					return Response.created(new URI("/vehicles/" + id)).build();
+				case 500:
+					return Response.status(code).entity("Security Service Error").build();
+				default:
+					return Response.status(code).build();
+			}	
 		} catch (Exception e) {
 			return Response.status(500).build();
 		}

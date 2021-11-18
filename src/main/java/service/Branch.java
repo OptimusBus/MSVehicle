@@ -110,4 +110,11 @@ public class Branch implements BranchLocal {
 		em.removeVehicle(vehicleId);
 	}
 
+	@Override
+	public Vehicle getVehicleByEmail(String email) {
+		return Vehicle.decodeVehicle(em.getVehicleByEmail(email));
+	}
+	
+	
+
 }
